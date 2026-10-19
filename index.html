@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7e7ee">
+<title>Our Little World — Наш маленький мир</title>
+<style>
+:root{--ink:#493847;--muted:#8c7486;--pink:#f3c8d8;--pink2:#e9a6bf;--cream:#fff9f1;--lav:#e8dff5;--green:#c8dfc8;--line:#fff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(145deg,#fff4f2,#f2eafa 54%,#e1eef0)}
+body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}button,input{font:inherit}button{cursor:pointer;color:var(--ink);border:1px solid #ffffffd9;background:#fffaf7;border-radius:15px;padding:10px 12px;font-size:12px;font-weight:800;box-shadow:0 5px 15px #76576a0b;transition:transform .12s,background .12s}button:active{transform:scale(.97);background:#ffeaf0}button:disabled{opacity:.45;cursor:not-allowed}
+.app{max-width:1050px;margin:auto;padding:10px 0 20px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 4px 14px}.eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:900}h1{font-size:clamp(23px,4vw,34px);line-height:1.08;margin:3px 0 0;letter-spacing:-.04em}.day{background:#fffaf8c9;border:1px solid #fff;padding:10px 13px;border-radius:16px;font-weight:900;font-size:12px;white-space:nowrap;box-shadow:0 6px 20px #75516b0b}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px;align-items:start}.left,.right{min-width:0}.scene-card{position:relative;overflow:hidden;border:1px solid #ffffffc9;border-radius:24px;background:linear-gradient(#d9e9f2,#b8d5df);box-shadow:0 18px 45px #76576a20}#scene{width:100%;height:clamp(340px,57vh,560px);display:block;touch-action:pan-y}.scene-title{position:absolute;left:12px;top:12px;background:#fffaf0e8;border:1px solid #ffffffb8;border-radius:13px;padding:9px 11px;font-size:12px;font-weight:850;backdrop-filter:blur(10px)}.hint{position:absolute;right:10px;bottom:10px;background:#493847b8;color:white;border-radius:11px;padding:7px 9px;font-size:10px;pointer-events:none}.scene-actions{display:flex;gap:6px;flex-wrap:wrap;position:absolute;left:10px;right:10px;bottom:10px}.scene-actions button{background:#fffaf0ed;padding:8px 10px}
+.panel{background:#ffffffa8;border:1px solid #ffffffd9;border-radius:21px;padding:13px;margin-bottom:10px;box-shadow:0 8px 25px #76576a08}.panel h2{font-size:14px;margin:0 0 10px}.location-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.location-list button{text-align:left;min-height:52px;display:flex;gap:8px;align-items:center;padding:9px}.location-list button.active{background:linear-gradient(135deg,#f4cbd9,#e7d8f4);border-color:#fff}.loc-emoji{font-size:21px}.loc-name{font-size:11px;line-height:1.25}.loc-name small{display:block;font-size:9px;color:var(--muted);font-weight:650;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.stat{padding:9px;background:#fffaf5d9;border:1px solid white;border-radius:13px;min-width:0}.stat-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:850;gap:3px}.stat-num{font-size:10px;color:var(--muted);font-weight:900}.track{height:5px;background:#eadfe8;border-radius:99px;overflow:hidden;margin-top:7px}.fill{height:100%;width:50%;border-radius:99px;background:linear-gradient(90deg,#eaa7bf,#c29bcf);transition:width .25s}
+.message{min-height:63px;padding:12px;display:flex;align-items:center;gap:9px;background:#fffaf5d9;border:1px solid white;border-radius:16px;margin-bottom:10px}.message .heart{font-size:25px}.message p{margin:0;font-size:12px;line-height:1.45}
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.actions button{min-height:67px;padding:8px 5px}.emoji{display:block;font-size:21px;margin-bottom:3px}.primary{background:linear-gradient(140deg,#f4cbd9,#e7d8f4);border-color:#fff}
+.money{font-size:18px;font-weight:950}.muted{font-size:11px;color:var(--muted);line-height:1.4}.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.inventory{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:10px;font-weight:800;background:#fff9f2;border:1px solid white;border-radius:99px;padding:6px 9px}.shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.shop-item{padding:9px;background:#fffaf5;border:1px solid white;border-radius:13px}.shop-item strong{font-size:11px;display:block}.shop-item small{font-size:10px;color:var(--muted);display:block;margin:4px 0 7px}.shop-item button{width:100%;padding:7px}.field{display:flex;gap:6px}.field input{min-width:0;width:100%;padding:10px;border-radius:12px;border:1px solid #e7d8e4;background:#fffaf7;color:var(--ink)}footer{text-align:center;font-size:10px;color:var(--muted);padding:13px 5px 4px}
+.modal{position:fixed;inset:0;z-index:10;background:#3e2e3db8;display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-card{width:min(100%,430px);max-height:85vh;overflow:auto;background:#fff8f0;border-radius:24px;padding:22px;box-shadow:0 20px 80px #0003}.modal-card h2{margin:5px 0 10px;font-size:23px}.modal-card p{font-size:14px;line-height:1.6}.modal-card button{width:100%;margin-top:8px}.close{float:right;width:auto!important;margin:0!important}.toast{position:fixed;z-index:20;bottom:18px;left:50%;transform:translateX(-50%);background:#493847ed;color:white;padding:10px 15px;border-radius:99px;font-size:12px;font-weight:800;display:none;max-width:90vw;text-align:center}.toast.show{display:block}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.right{display:grid;grid-template-columns:1fr 1fr;gap:10px}.right .panel{margin:0}.right .wide{grid-column:1/-1}#scene{height:clamp(320px,48vh,460px)}}
+@media(max-width:440px){body{padding-left:8px;padding-right:8px}.right{display:block}.right .panel{margin-bottom:9px}.day{padding:8px 9px;font-size:10px}.location-list{gap:6px}.scene-actions button{font-size:10px;padding:7px 8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="eyebrow">бесплатная 3D-песочница о большой любви</div><h1>Our Little World <span aria-hidden="true">💗</span></h1></div><div class="day" id="day">ДЕНЬ 1 ☀️</div></header>
+<div class="layout">
+<div class="left">
+<section class="scene-card" aria-label="Изометрический трёхмерный мир">
+<canvas id="scene"></canvas><div class="scene-title" id="sceneTitle">🏡 Наш уютный дом</div>
+<div class="scene-actions"><button id="moveBtn">🚶 Прогуляться</button><button id="buildBtn">🪴 Режим декора</button><button id="resetViewBtn">↻ Камера</button></div>
+<div class="hint">Перетаскивай мышью, чтобы вращать мир</div>
+</section>
+<section class="panel" style="margin-top:10px"><h2>🗺️ Куда отправимся?</h2><div class="location-list" id="locations">
+<button class="active" data-place="home"><span class="loc-emoji">🏡</span><span class="loc-name">Наш дом<small>отдых и уют</small></span></button>
+<button data-place="street"><span class="loc-emoji">🛣️</span><span class="loc-name">Улица<small>прогулки</small></span></button>
+<button data-place="shop"><span class="loc-emoji">🛍️</span><span class="loc-name">Магазин<small>покупки</small></span></button>
+<button data-place="park"><span class="loc-emoji">🌳</span><span class="loc-name">Парк<small>природа и свидания</small></span></button>
+<button data-place="cafe"><span class="loc-emoji">☕</span><span class="loc-name">Кафе<small>вкусности</small></span></button>
+<button data-place="bedroom"><span class="loc-emoji">🛏️</span><span class="loc-name">Спальня<small>сон и энергия</small></span></button>
+</div></section>
+</div>
+<aside class="right">
+<section class="panel wide"><h2>✨ Состояние персонажа</h2><div class="stats">
+<div class="stat"><div class="stat-head"><span>⚡ Энергия</span><span class="stat-num" id="energyN">72%</span></div><div class="track"><div class="fill" id="energyB"></div></div></div>
+<div class="stat"><div class="stat-head"><span>🍓 Сытость</span><span class="stat-num" id="hungerN">65%</span></div><div class="track"><div class="fill" id="hungerB"></div></div></div>
+<div class="stat"><div class="stat-head"><span>😊 Настроение</span><span class="stat-num" id="moodN">68%</span></div><div class="track"><div class="fill" id="moodB"></div></div></div>
+<div class="stat"><div class="stat-head"><span>💗 Близость</span><span class="stat-num" id="loveN">20%</span></div><div class="track"><div class="fill" id="loveB"></div></div></div>
+</div></section>
+<section class="panel"><div class="row"><h2>💰 Деньги</h2><div class="money" id="money">250 🪙</div></div><p class="muted">Зарабатывай за дела и покупай предметы для дома.</p><button id="workBtn" style="width:100%">🧰 Подработать (+50)</button></section>
+<section class="panel wide"><h2>🎒 Мои вещи</h2><div class="inventory" id="inventory"><span class="chip">🪴 Маленькое растение ×1</span></div></section>
+<section class="panel wide" id="shopPanel" hidden><h2>🛍️ Магазин декора</h2><p class="muted">Покупай уютные вещи. Купленные предметы появятся в доме.</p><div class="shop-grid" id="shopItems"></div></section>
+<section class="panel wide"><h2>💞 Что можно сделать?</h2><div class="actions">
+<button id="eat"><span class="emoji">🍝</span>Приготовить еду</button><button id="sleep"><span class="emoji">🛏️</span>Поспать</button><button id="clean"><span class="emoji">🧹</span>Убраться</button>
+<button id="relax"><span class="emoji">🎵</span>Отдохнуть</button><button id="together"><span class="emoji">☕</span>Быть вместе</button><button class="primary" id="confess"><span class="emoji">💌</span>Прочитать письмо</button>
+</div></section>
+<section class="panel wide"><h2>🧑‍🤝‍🧑 Наши имена</h2><div class="field"><input id="nameOne" maxlength="18" placeholder="Твоё имя" aria-label="Имя первого персонажа"><input id="nameTwo" maxlength="18" placeholder="Имя второго персонажа" aria-label="Имя второго персонажа"></div><button id="saveNames" style="width:100%;margin-top:7px">Сохранить имена</button></section>
+<section class="panel wide"><div class="row"><h2>💾 Сохранение</h2><button id="resetGame">Начать заново</button></div><p class="muted">Игра сохраняется в браузере на этом устройстве. Для переноса прогресса между устройствами пока нужен отдельный экспорт.</p></section>
+</aside>
+</div>
+<footer>Версия 0.2 · Работает без аккаунта и без мультиплеера · Для 3D-графики нужен интернет при загрузке</footer>
+</div>
+<div class="modal" id="letterModal" role="dialog" aria-modal="true" aria-labelledby="letterTitle"><div class="modal-card"><button class="close" id="closeLetter">✕</button><div style="font-size:36px">💌🌷</div><h2 id="letterTitle">Для самого особенного человека</h2><p id="letterText">Ты делаешь мой мир теплее. Даже самые обычные дни рядом с тобой становятся особенными. Я счастлив, что ты есть в моей жизни. Люблю тебя. 💗</p><button id="hugBtn" class="primary">Обнять виртуально 🤍</button></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+const $=id=>document.getElementById(id);
+const defaults={energy:72,hunger:65,mood:68,love:20,day:1,money:250,place:'home',nameOne:'Я',nameTwo:'Любимая',inventory:{plant:1},decor:[],buildMode:false};
+let state={...defaults,inventory:{...defaults.inventory},decor:[]};
+try{const s=JSON.parse(localStorage.getItem('ourLittleWorldSave')||'null');if(s)state={...defaults,...s,inventory:{...defaults.inventory,...(s.inventory||{})},decor:Array.isArray(s.decor)?s.decor:[]}}catch{}
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+function save(){try{localStorage.setItem('ourLittleWorldSave',JSON.stringify(state))}catch{}}
+function say(t,e='✨'){$('messageText')?.remove();$('toast').textContent=e+' '+t;$('toast').classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2600)}
+function refresh(){
+ $('day').textContent=`ДЕНЬ ${state.day} ☀️`;$('money').textContent=`${state.money} 🪙`;
+ for(const k of ['energy','hunger','mood','love']){$(k+'N').textContent=state[k]+'%';$(k+'B').style.width=state[k]+'%'}
+ $('nameOne').value=state.nameOne;$('nameTwo').value=state.nameTwo;
+ document.querySelectorAll('[data-place]').forEach(b=>b.classList.toggle('active',b.dataset.place===state.place));
+ $('sceneTitle').textContent=({home:'🏡 Наш уютный дом',street:'🛣️ Улица нашего городка',shop:'🛍️ Магазинчик',park:'🌳 Зелёный парк',cafe:'☕ Романтичное кафе',bedroom:'🛏️ Наша спальня'})[state.place]||'Наш мир';
+ const names={plant:'🪴 Маленькое растение',lamp:'💡 Лампа',sofa:'🛋️ Диван',flower:'🌷 Цветы',tv:'📺 Телевизор',bed:'🛏️ Кровать',rug:'🧶 Ковёр',book:'📚 Книги'};
+ $('inventory').innerHTML=Object.entries(state.inventory).filter(([k,v])=>v>0).map(([k,v])=>`<span class="chip">${names[k]||k} ×${v}</span>`).join('')||'<span class="chip">Пока пусто — загляни в магазин</span>';
+ $('shopPanel').hidden=state.place!=='shop';
+ $('buildBtn').textContent=state.buildMode?'✅ Закончить декор':'🪴 Режим декора';
+}
+function act(kind){
+ state.day++;
+ if(kind==='eat'){state.hunger=clamp(state.hunger+27);state.mood=clamp(state.mood+5);say('Вы вместе приготовили что-то вкусное. Кухня наполнилась ароматом домашнего уюта.','🍝')}
+ if(kind==='sleep'){state.energy=clamp(state.energy+34);state.mood=clamp(state.mood+7);say('Вы отдохнули в мягкой постели. За окном новый день и новые приключения.','🌙')}
+ if(kind==='clean'){state.mood=clamp(state.mood+10);state.energy=clamp(state.energy-7);state.money+=10;say('Навели порядок и получили 10 монет за маленькое дело!','🧹')}
+ if(kind==='relax'){state.energy=clamp(state.energy+10);state.mood=clamp(state.mood+15);say('Любимая музыка играет тихо-тихо. Можно никуда не спешить.','🎵')}
+ if(kind==='together'){state.love=clamp(state.love+12);state.mood=clamp(state.mood+8);say(`${state.nameOne} и ${state.nameTwo} провели время вместе. Такие моменты бесценны.`,'💗')}
+ if(kind==='confess'){state.love=clamp(state.love+20);state.mood=clamp(state.mood+8);$('letterModal').classList.add('show');say('Ты нашёл маленькое письмо, спрятанное для тебя.','💌')}
+ state.energy=clamp(state.energy-(kind==='sleep'?0:2));state.hunger=clamp(state.hunger-(kind==='eat'?0:3));refresh();save();
+}
+$('eat').onclick=()=>act('eat');$('sleep').onclick=()=>{state.place='bedroom';refresh();act('sleep')};$('clean').onclick=()=>act('clean');$('relax').onclick=()=>act('relax');$('together').onclick=()=>act('together');$('confess').onclick=()=>act('confess');
+$('closeLetter').onclick=()=>$('letterModal').classList.remove('show');$('hugBtn').onclick=()=>{$('letterModal').classList.remove('show');state.love=clamp(state.love+5);refresh();save();say('Крепкие виртуальные объятия!','🤍')};
+$('workBtn').onclick=()=>{state.money+=50;state.energy=clamp(state.energy-12);state.mood=clamp(state.mood-3);state.day++;refresh();save();say('Подработка завершена. В копилке стало на 50 монет больше.','🧰')};
+$('saveNames').onclick=()=>{state.nameOne=$('nameOne').value.trim()||'Я';state.nameTwo=$('nameTwo').value.trim()||'Любимая';refresh();save();say('Имена сохранены!','💞')};
+$('resetGame').onclick=()=>{if(confirm('Начать игру заново? Текущий прогресс будет удалён в этом браузере.')){state={...defaults,inventory:{...defaults.inventory},decor:[]};save();refresh();updateDecor();say('Новая история начинается!','🌱')}};
+const items=[
+ {id:'plant',emoji:'🪴',name:'Растение',desc:'Зелёный уголок для дома',price:30},
+ {id:'lamp',emoji:'💡',name:'Тёплая лампа',desc:'Мягкий уютный свет',price:45},
+ {id:'sofa',emoji:'🛋️',name:'Мягкий диван',desc:'Место для отдыха вдвоём',price:100},
+ {id:'flower',emoji:'🌷',name:'Букет цветов',desc:'Маленький знак любви',price:35},
+ {id:'tv',emoji:'📺',name:'Телевизор',desc:'Вечера с любимым фильмом',price:120},
+ {id:'bed',emoji:'🛏️',name:'Большая кровать',desc:'Сладкие сны',price:150},
+ {id:'rug',emoji:'🧶',name:'Мягкий ковёр',desc:'Уют под ногами',price:55},
+ {id:'book',emoji:'📚',name:'Книги',desc:'Истории на полке',price:40}
+];
+function renderShop(){$('shopItems').innerHTML=items.map(i=>`<div class="shop-item"><strong>${i.emoji} ${i.name}</strong><small>${i.desc}</small><button data-buy="${i.id}">Купить · ${i.price} 🪙</button></div>`).join('');$('shopItems').querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buy(b.dataset.buy))}
+function buy(id){const i=items.find(x=>x.id===id);if(!i)return;if(state.money<i.price){say('Не хватает монет. Можно подработать!','🪙');return}state.money-=i.price;state.inventory[id]=(state.inventory[id]||0)+1;state.decor.push(id);refresh();save();updateDecor();say(`${i.name} куплено и добавлено в дом!`,i.emoji)}
+renderShop();
+document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>go(b.dataset.place));
+function go(place){state.place=place;state.day++;refresh();save();buildScene(place);say(({home:'Вы вернулись домой. Здесь всегда уютно.','street':'Свежий воздух и прогулка по городу.','shop':'Добро пожаловать! Здесь можно купить декор.','park':'В парке можно устроить маленькое свидание.','cafe':'Запах кофе и тёплый свет — идеальное место для встречи.','bedroom':'Тихая спальня — время отдохнуть.'})[place]||'Исследуем мир!','📍');if(place==='park'){state.mood=clamp(state.mood+6);refresh();save()}if(place==='cafe'){state.money=Math.max(0,state.money-5);state.hunger=clamp(state.hunger+8);refresh();save()}}
+$('moveBtn').onclick=()=>{const places=['home','street','shop','park','cafe','bedroom'];const next=places[(places.indexOf(state.place)+1)%places.length];go(next)};
+$('buildBtn').onclick=()=>{state.buildMode=!state.buildMode;refresh();say(state.buildMode?'Режим декора включён: нажми на сцену, чтобы поставить купленный предмет.':'Режим декора выключен.','🪴')};
+$('resetViewBtn').onclick=()=>{if(camera){camera.position.set(10,12,14);camera.lookAt(0,0,0)}};
+let renderer,scene,camera,worldGroup,character,otherCharacter,raycaster,mouse,decorGroup,dragging=false,lastX=0,lastY=0;
+let buildScene=()=>{}, updateDecor=()=>{};
+const canvas=$('scene');
+try{
+ renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.8));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.setClearColor(0xcfe3eb);
+ scene=new THREE.Scene();scene.background=new THREE.Color(0xcfe3eb);scene.fog=new THREE.Fog(0xcfe3eb,24,48);
+ camera=new THREE.OrthographicCamera(-12,12,9,-9,.1,100);camera.position.set(10,12,14);camera.lookAt(0,0,0);
+ scene.add(new THREE.HemisphereLight(0xfff5e8,0x8096a3,2));
+ const sun=new THREE.DirectionalLight(0xfff1d6,2.2);sun.position.set(-8,15,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+ worldGroup=new THREE.Group();scene.add(worldGroup);decorGroup=new THREE.Group();worldGroup.add(decorGroup);
+ raycaster=new THREE.Raycaster();mouse=new THREE.Vector2();
+ const mat=(color,roughness=.9)=>new THREE.MeshStandardMaterial({color,roughness});
+ const materials={grass:mat(0x91bd91),grass2:mat(0xa9cfa0),road:mat(0x9ba6b0),path:mat(0xe8d8c4),wall:mat(0xffe4d2),wall2:mat(0xf3d1d4),roof:mat(0xc78394),roof2:mat(0x9b91bc),wood:mat(0xb9825c),darkwood:mat(0x79594c),glass:mat(0x9ed4e2,.3),leaf:mat(0x6d9c70),leaf2:mat(0x8bbd85),trunk:mat(0x926a50),white:mat(0xfff8e9),pink:mat(0xeaa8bf),skin:mat(0xf1c4a4),hair:mat(0x593f43),blue:mat(0x91a9d8),purple:mat(0xb29bd7),yellow:mat(0xf3d67b)};
+ function mesh(geo,material,x,y,z,parent=worldGroup){const m=new THREE.Mesh(geo,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
+ function box(w,h,d,material,x,y,z,parent=worldGroup){return mesh(new THREE.BoxGeometry(w,h,d),material,x,y,z,parent)}
+ function cylinder(rt,rb,h,material,x,y,z,parent=worldGroup,segments=8){return mesh(new THREE.CylinderGeometry(rt,rb,h,segments),material,x,y,z,parent)}
+ function tree(x,z,scale=1){cylinder(.12*scale,.18*scale,1.1*scale,materials.trunk,x,.55*scale,z);const a=mesh(new THREE.IcosahedronGeometry(.65*scale,1),materials.leaf,x,.1*scale+1.15*scale,z);const b=mesh(new THREE.IcosahedronGeometry(.48*scale,1),materials.leaf2,x+.2*scale,.55*scale+1.15*scale,z+.06*scale);return [a,b]}
+ function house(x,z,w,d,wall,roof,label=''){box(w,2.3,d,wall,x,1.15,z);const r=mesh(new THREE.ConeGeometry(Math.max(w,d)*.78,1.2,4),roof,x,2.9,z);r.rotation.y=Math.PI/4;box(.8,.9,.08,materials.glass,x,1.25,z+d/2+.045);box(.6,1.1,.09,materials.wood,x-w*.23,0.55,z+d/2+.05);if(label){const plaque=box(w*.62,.18,.08,materials.white,x,2.05,z+d/2+.08);plaque.userData.label=label} }
+ function makeCharacter(x,z,bodyMat,hairMat,scale=1){const g=new THREE.Group();g.position.set(x,0,z);worldGroup.add(g);const torso=mesh(new THREE.CapsuleGeometry(.34*scale,.65*scale,4,8),bodyMat,0,1.05*scale,0,g);cylinder(.23*scale,.25*scale,.13*scale,materials.skin,0,1.58*scale,0,g);const head=mesh(new THREE.SphereGeometry(.28*scale,12,10),materials.skin,0,1.85*scale,0,g);const hair=mesh(new THREE.SphereGeometry(.29*scale,12,8,0,Math.PI*2,0,Math.PI*.65),hairMat,0,1.95*scale,-.015*scale,g);const eyeMat=mat(0x4b3540);mesh(new THREE.SphereGeometry(.035*scale,8,6),eyeMat,-.1*scale,1.88*scale,.25*scale,g);mesh(new THREE.SphereGeometry(.035*scale,8,6),eyeMat,.1*scale,1.88*scale,.25*scale,g);g.userData={head,torso};return g}
+ function clearGroup(g){while(g.children.length){const c=g.children.pop();if(c.geometry)c.geometry.dispose();if(c.material&&c.material.dispose)c.material.dispose()}}
+ function base(){box(30,.3,30,materials.grass,0,-.22,0);box(30,.08,4,materials.road,0,-.04,0);box(4,.09,30,materials.road,0,-.03,0);for(let i=-13;i<=13;i+=2){box(.8,.02,.09,materials.white,i,.02,0);box(.09,.02,.8,materials.white,0,.03,i)}}
+ buildScene=function(place){
+  clearGroup(worldGroup);worldGroup.add(decorGroup);decorGroup.clear();
+  base();
+  // compact town around a central crossing
+  box(10,.08,1.6,materials.path,-7,.02,5);box(1.6,.08,10,materials.path,5,.02,7);
+  house(-8, -7,4,4,materials.wall,materials.roof,'ДОМ');house(7,-7,4,4,materials.wall2,materials.roof2,'МАГАЗИН');
+  house(-8,7,4,4,mat(0xf5e7ba),materials.roof2,'КАФЕ');
+  // park lawn, pond and trees
+  box(6,.1,6,materials.grass2,7,0,7);const pond=mesh(new THREE.CylinderGeometry(1.2,1.2,.12,24),materials.glass,7,.08,7);pond.rotation.x=0;
+  [[5,5],[9,5],[5,9],[9,9],[-11,4],[-11,8],[11,-11],[10,-5]].forEach((p,i)=>tree(p[0],p[1],i%3===0?1.15:.9));
+  // street lights and flower beds
+  for(const p of [[-3,-2],[3,3],[-5,8],[8,1]]){cylinder(.05,.07,1.7,materials.darkwood,p[0],.85,p[1]);cylinder(.22,.22,.12,materials.yellow,p[0],1.72,p[1])}
+  // little cars
+  box(1.7,.55,.9,materials.pink,-2,.3,-2);box(.8,.28,.92,materials.glass,-2,.67,-2);cylinder(.22,.22,.14,materials.darkwood,-2.5,.08,-2.45);cylinder(.22,.22,.14,materials.darkwood,-1.5,.08,-2.45);
+  // room area displayed inside house, like an open dollhouse
+  if(place==='home'||place==='bedroom'){
+   box(5,.22,5,mat(0xffe9d7),-8,.18,-7);
+   box(5,.1,.12,materials.wall2,-8,.45,-9.45);box(.12,1.8,5,materials.wall2,-10.45,1,-7);
+   box(1.5,.55,.9,materials.wood,-9,.55,-6.2);box(1.35,.1,.75,materials.white,-9,.88,-6.2);
+   box(1.8,.45,1.1,materials.pink,-7, .5,-8);box(1.8,.12,1.1,materials.white,-7,.78,-8);
+   box(.5,.6,.5,materials.wood,-6.2,.48,-6.4);cylinder(.24,.24,.08,materials.yellow,-6.2,.82,-6.4);
+   if(place==='bedroom'){box(1.2,.15,.5,materials.purple,-7,.96,-8)}
+  }
+  // city labels rendered as simple colorful signs
+  box(2.8,.22,.18,materials.white,7,2.0,-4.7);box(2.8,.22,.18,materials.white,-8,2.0,9.3);
+  // reset characters at sensible scene positions
+  character=makeCharacter(place==='home'||place==='bedroom'?-8:-1,place==='home'||place==='bedroom'?-5:1,materials.blue,materials.hair,.9);
+  otherCharacter=makeCharacter(place==='home'||place==='bedroom'?-6.5:-.1,place==='home'||place==='bedroom'?-5:1.8,materials.purple,mat(0x754e56),.88);
+  // keep bought decor visible near the house
+  updateDecor();
+  resize();
+ }
+ updateDecor=function(){if(!decorGroup)return;clearGroup(decorGroup);const decorItems=state.decor||[];decorItems.forEach((id,i)=>{const x=-10+(i%4)*1.15,z=-8+Math.floor(i/4)*1.05;switch(id){case'plant':cylinder(.18,.22,.25,materials.wood,x,.35,z,decorGroup);mesh(new THREE.IcosahedronGeometry(.27,1),materials.leaf,x,.68,z,decorGroup);break;case'lamp':cylinder(.06,.09,.6,materials.darkwood,x,.5,z,decorGroup);cylinder(.25,.1,.2,materials.yellow,x,.9,z,decorGroup);break;case'sofa':box(1.4,.45,.65,materials.purple,x,.35,z,decorGroup);box(1.4,.55,.2,materials.pink,x,.7,z-.23,decorGroup);break;case'flower':cylinder(.14,.16,.22,materials.white,x,.25,z,decorGroup);cylinder(.025,.03,.5,materials.leaf,x,.55,z,decorGroup);mesh(new THREE.SphereGeometry(.13,8,8),materials.pink,x,.82,z,decorGroup);break;case'tv':box(1,.65,.12,materials.darkwood,x,.7,z,decorGroup);box(.85,.48,.025,materials.glass,x,.72,z+.07,decorGroup);break;case'bed':box(1.3,.35,1.7,materials.wood,x,.3,z,decorGroup);box(1.2,.12,1.5,materials.white,x,.52,z,decorGroup);break;case'rug':box(1.4,.05,1.1,materials.pink,x,.22,z,decorGroup);break;case'book':box(.55,.4,.25,materials.blue,x,.4,z,decorGroup);box(.55,.4,.25,materials.pink,x+.3,.4,z,decorGroup);break;}})};
+ canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId)});
+ canvas.addEventListener('pointermove',e=>{if(!dragging||!worldGroup)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;worldGroup.rotation.y+=dx*.006;camera.position.y=Math.max(7,Math.min(18,camera.position.y-dy*.025));camera.lookAt(0,0,0);lastX=e.clientX;lastY=e.clientY});
+ canvas.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;const rect=canvas.getBoundingClientRect();mouse.x=((e.clientX-rect.left)/rect.width)*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(worldGroup.children,true);if(state.buildMode){const id=Object.keys(state.inventory).find(k=>state.inventory[k]>0&&k!=='plant')||'plant';if(state.inventory[id]>0){state.decor.push(id);state.inventory[id]--;updateDecor();refresh();save();say('Предмет поставлен в доме!','🪴')}else say('Сначала купи предмет в магазине.','🛍️')}else if(hits.length){if(state.place==='street')say('Ты исследуешь улицу. Нажми на место в меню, чтобы зайти внутрь.','🚶')}});
+ function resize(){if(!renderer)return;const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);const aspect=w/h;camera.left=-9*aspect;camera.right=9*aspect;camera.top=9;camera.bottom=-9;camera.updateProjectionMatrix()}
+ window.addEventListener('resize',resize);
+ buildScene(state.place);
+ function animate(){requestAnimationFrame(animate);if(renderer&&scene&&camera)renderer.render(scene,camera)}animate();
+}catch(err){console.error(err);const c=canvas.getContext('2d');c.fillStyle='#d6e7ec';c.fillRect(0,0,canvas.width,canvas.height);c.fillStyle='#493847';c.font='18px system-ui';c.fillText('3D-мир загружается…',20,40);c.font='13px system-ui';c.fillText('Проверь интернет и обнови страницу.',20,65)}
+refresh();updateDecor();
+</script>
+</body>
+</html>
