@@ -38,7 +38,7 @@ body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}button,in
 <button data-place="shop"><span class="loc-emoji">🛍️</span><span class="loc-name">Магазин<small>покупки</small></span></button>
 <button data-place="park"><span class="loc-emoji">🌳</span><span class="loc-name">Парк<small>природа и свидания</small></span></button>
 <button data-place="cafe"><span class="loc-emoji">☕</span><span class="loc-name">Кафе<small>вкусности</small></span></button>
-<button data-place="bedroom"><span class="loc-emoji">🛏️</span><span class="loc-name">Спальня<small>сон и энергия</small></span></button>
+<button data-place="bedroom"><span class="loc-emoji">🛏️</span><span class="loc-name">Отдельная спальня<small>сон и энергия</small></span></button>
 </div></section>
 </div>
 <aside class="right">
@@ -115,8 +115,9 @@ document.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>go(b.dataset.
 function go(place){state.place=place;state.day++;refresh();save();buildScene(place);say(({home:'Вы вернулись домой. Здесь всегда уютно.','street':'Свежий воздух и прогулка по городу.','shop':'Добро пожаловать! Здесь можно купить декор.','park':'В парке можно устроить маленькое свидание.','cafe':'Запах кофе и тёплый свет — идеальное место для встречи.','bedroom':'Тихая спальня — время отдохнуть.'})[place]||'Исследуем мир!','📍');if(place==='park'){state.mood=clamp(state.mood+6);refresh();save()}if(place==='cafe'){state.money=Math.max(0,state.money-5);state.hunger=clamp(state.hunger+8);refresh();save()}}
 $('moveBtn').onclick=()=>{const places=['home','street','shop','park','cafe','bedroom'];const next=places[(places.indexOf(state.place)+1)%places.length];go(next)};
 $('buildBtn').onclick=()=>{state.buildMode=!state.buildMode;refresh();say(state.buildMode?'Режим декора включён: нажми на сцену, чтобы поставить купленный предмет.':'Режим декора выключен.','🪴')};
-$('resetViewBtn').onclick=()=>{if(camera){camera.position.set(10,12,14);camera.lookAt(0,0,0)}};
+$('resetViewBtn').onclick=()=>{if(camera){camera.position.set(focusTarget.x+10,12,focusTarget.z+14);camera.lookAt(focusTarget)}};
 let renderer,scene,camera,worldGroup,character,otherCharacter,raycaster,mouse,decorGroup,dragging=false,lastX=0,lastY=0;
+let focusTarget=new THREE.Vector3(0,0,0);
 let buildScene=()=>{}, updateDecor=()=>{};
 const canvas=$('scene');
 try{
@@ -142,36 +143,60 @@ try{
   base();
   // compact town around a central crossing
   box(10,.08,1.6,materials.path,-7,.02,5);box(1.6,.08,10,materials.path,5,.02,7);
-  house(-8, -7,4,4,materials.wall,materials.roof,'ДОМ');house(7,-7,4,4,materials.wall2,materials.roof2,'МАГАЗИН');
+  house(-8, -7,4,4,materials.wall,materials.roof,'ДОМ');
+  house(7,-7,4,4,materials.wall2,materials.roof2,'МАГАЗИН');
   house(-8,7,4,4,mat(0xf5e7ba),materials.roof2,'КАФЕ');
+  house(0,-8,3.4,3.4,mat(0xe2d8f4),mat(0x9b91bc),'СПАЛЬНЯ');
   // park lawn, pond and trees
-  box(6,.1,6,materials.grass2,7,0,7);const pond=mesh(new THREE.CylinderGeometry(1.2,1.2,.12,24),materials.glass,7,.08,7);pond.rotation.x=0;
+  box(7,.1,7,materials.grass2,8,0,8);
+  const pond=mesh(new THREE.CylinderGeometry(1.15,1.15,.12,24),materials.glass,8,.08,8);
+  box(1.1,.07,5,materials.path,5.3,.04,8);
+  box(5,.07,1.1,materials.path,8,.04,5.3);
   [[5,5],[9,5],[5,9],[9,9],[-11,4],[-11,8],[11,-11],[10,-5]].forEach((p,i)=>tree(p[0],p[1],i%3===0?1.15:.9));
   // street lights and flower beds
   for(const p of [[-3,-2],[3,3],[-5,8],[8,1]]){cylinder(.05,.07,1.7,materials.darkwood,p[0],.85,p[1]);cylinder(.22,.22,.12,materials.yellow,p[0],1.72,p[1])}
   // little cars
   box(1.7,.55,.9,materials.pink,-2,.3,-2);box(.8,.28,.92,materials.glass,-2,.67,-2);cylinder(.22,.22,.14,materials.darkwood,-2.5,.08,-2.45);cylinder(.22,.22,.14,materials.darkwood,-1.5,.08,-2.45);
-  // room area displayed inside house, like an open dollhouse
-  if(place==='home'||place==='bedroom'){
-   box(5,.22,5,mat(0xffe9d7),-8,.18,-7);
-   box(5,.1,.12,materials.wall2,-8,.45,-9.45);box(.12,1.8,5,materials.wall2,-10.45,1,-7);
-   box(1.5,.55,.9,materials.wood,-9,.55,-6.2);box(1.35,.1,.75,materials.white,-9,.88,-6.2);
-   box(1.8,.45,1.1,materials.pink,-7, .5,-8);box(1.8,.12,1.1,materials.white,-7,.78,-8);
-   box(.5,.6,.5,materials.wood,-6.2,.48,-6.4);cylinder(.24,.24,.08,materials.yellow,-6.2,.82,-6.4);
-   if(place==='bedroom'){box(1.2,.15,.5,materials.purple,-7,.96,-8)}
+  // Distinct open-room interiors: home living room and a separate bedroom building.
+  if(place==='home'){
+   box(4.2,.18,4.2,mat(0xffe9d7),-8,.18,-7);
+   box(4.2,.1,.12,materials.wall2,-8,.42,-9.05);
+   box(.12,1.7,4.2,materials.wall2,-10.05,1,-7);
+   // sofa, coffee table, rug and plant
+   box(1.5,.42,.62,materials.purple,-9,.48,-6.2);
+   box(1.5,.5,.16,materials.pink,-9,.76,-6.48);
+   box(1.05,.07,.7,materials.pink,-7.6,.28,-6.5);
+   box(.65,.3,.45,materials.wood,-7.6,.48,-6.5);
+   cylinder(.17,.19,.24,materials.wood,-6.5,.3,-8.2);
+   mesh(new THREE.IcosahedronGeometry(.25,1),materials.leaf,-6.5,.62,-8.2);
+  }
+  if(place==='bedroom'){
+   // separate bedroom at its own city location, not the living room
+   box(3.6,.18,3.6,mat(0xf0e8fb),0,.18,-8);
+   box(3.6,.1,.12,materials.roof2,0,.42,-9.75);
+   box(.12,1.7,3.6,materials.wall2,-1.8,1,-8);
+   box(1.45,.42,1.8,materials.wood,.1,.4,-8.2);
+   box(1.35,.14,1.65,materials.white,.1,.67,-8.2);
+   box(.55,.17,.42,materials.purple,.1,.79,-8.75);
+   box(.48,.65,.45,materials.wood,1.05,.5,-7.0);
+   cylinder(.22,.22,.1,materials.yellow,1.05,.9,-7.0);
+   box(.9,.07,.7,materials.pink,-.8,.28,-7.0);
   }
   // city labels rendered as simple colorful signs
   box(2.8,.22,.18,materials.white,7,2.0,-4.7);box(2.8,.22,.18,materials.white,-8,2.0,9.3);
-  // reset characters at sensible scene positions
-  character=makeCharacter(place==='home'||place==='bedroom'?-8:-1,place==='home'||place==='bedroom'?-5:1,materials.blue,materials.hair,.9);
-  otherCharacter=makeCharacter(place==='home'||place==='bedroom'?-6.5:-.1,place==='home'||place==='bedroom'?-5:1.8,materials.purple,mat(0x754e56),.88);
-  // keep bought decor visible near the house
+  // Place characters at the selected destination and focus the isometric camera there.
+  const centers={home:[-8,-7],street:[0,0],shop:[7,-7],park:[8,8],cafe:[-8,7],bedroom:[0,-8]};
+  const pos=centers[place]||[0,0];
+  character=makeCharacter(pos[0]-.55,pos[1]+.8,materials.blue,materials.hair,.9);
+  otherCharacter=makeCharacter(pos[0]+.55,pos[1]+1.0,materials.purple,mat(0x754e56),.88);
+  focusTarget.set(pos[0],0,pos[1]);
+  camera.position.set(pos[0]+10,12,pos[1]+14);camera.lookAt(focusTarget);
   updateDecor();
   resize();
  }
  updateDecor=function(){if(!decorGroup)return;clearGroup(decorGroup);const decorItems=state.decor||[];decorItems.forEach((id,i)=>{const x=-10+(i%4)*1.15,z=-8+Math.floor(i/4)*1.05;switch(id){case'plant':cylinder(.18,.22,.25,materials.wood,x,.35,z,decorGroup);mesh(new THREE.IcosahedronGeometry(.27,1),materials.leaf,x,.68,z,decorGroup);break;case'lamp':cylinder(.06,.09,.6,materials.darkwood,x,.5,z,decorGroup);cylinder(.25,.1,.2,materials.yellow,x,.9,z,decorGroup);break;case'sofa':box(1.4,.45,.65,materials.purple,x,.35,z,decorGroup);box(1.4,.55,.2,materials.pink,x,.7,z-.23,decorGroup);break;case'flower':cylinder(.14,.16,.22,materials.white,x,.25,z,decorGroup);cylinder(.025,.03,.5,materials.leaf,x,.55,z,decorGroup);mesh(new THREE.SphereGeometry(.13,8,8),materials.pink,x,.82,z,decorGroup);break;case'tv':box(1,.65,.12,materials.darkwood,x,.7,z,decorGroup);box(.85,.48,.025,materials.glass,x,.72,z+.07,decorGroup);break;case'bed':box(1.3,.35,1.7,materials.wood,x,.3,z,decorGroup);box(1.2,.12,1.5,materials.white,x,.52,z,decorGroup);break;case'rug':box(1.4,.05,1.1,materials.pink,x,.22,z,decorGroup);break;case'book':box(.55,.4,.25,materials.blue,x,.4,z,decorGroup);box(.55,.4,.25,materials.pink,x+.3,.4,z,decorGroup);break;}})};
  canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId)});
- canvas.addEventListener('pointermove',e=>{if(!dragging||!worldGroup)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;worldGroup.rotation.y+=dx*.006;camera.position.y=Math.max(7,Math.min(18,camera.position.y-dy*.025));camera.lookAt(0,0,0);lastX=e.clientX;lastY=e.clientY});
+ canvas.addEventListener('pointermove',e=>{if(!dragging||!worldGroup)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;worldGroup.rotation.y+=dx*.006;camera.position.y=Math.max(7,Math.min(18,camera.position.y-dy*.025));camera.lookAt(focusTarget);lastX=e.clientX;lastY=e.clientY});
  canvas.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;const rect=canvas.getBoundingClientRect();mouse.x=((e.clientX-rect.left)/rect.width)*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(worldGroup.children,true);if(state.buildMode){const id=Object.keys(state.inventory).find(k=>state.inventory[k]>0&&k!=='plant')||'plant';if(state.inventory[id]>0){state.decor.push(id);state.inventory[id]--;updateDecor();refresh();save();say('Предмет поставлен в доме!','🪴')}else say('Сначала купи предмет в магазине.','🛍️')}else if(hits.length){if(state.place==='street')say('Ты исследуешь улицу. Нажми на место в меню, чтобы зайти внутрь.','🚶')}});
  function resize(){if(!renderer)return;const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);const aspect=w/h;camera.left=-9*aspect;camera.right=9*aspect;camera.top=9;camera.bottom=-9;camera.updateProjectionMatrix()}
  window.addEventListener('resize',resize);
